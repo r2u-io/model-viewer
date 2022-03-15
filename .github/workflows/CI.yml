@@ -15,7 +15,6 @@ jobs:
           node-version: '16'
       - run: npm install
       - run: npm run bootstrap
-      - run: cd packages/model-viewer
       - run: npm run build
 
   deploy:
@@ -32,9 +31,9 @@ jobs:
           node-version: '16'
       - run: npm install
       - run: npm run bootstrap
-      - run: cd packages/model-viewer
       - run: npm run build
       - run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: cd packages/model-viewer
       - run: npm run publish --access public
