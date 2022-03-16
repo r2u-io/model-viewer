@@ -1,5 +1,5 @@
 {
-  "name": "@google/model-viewer-docs",
+  "name": "@r2u/model-viewer-docs",
   "private": true,
   "version": "0.0.1",
   "description": "<model-viewer> web site and live documentation",

@@ -1,5 +1,5 @@
 {
-  "name": "@google/model-viewer-space-opera",
+  "name": "@r2u/model-viewer-space-opera",
   "private": true,
   "version": "0.0.1",
   "description": "An interactive, client-side web UI for editing GLBs and model-viewer attributes.",
