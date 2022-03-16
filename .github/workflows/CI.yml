@@ -35,5 +35,4 @@ jobs:
       - run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: cd packages/model-viewer
-      - run: npm publish --access public
+      - run: npm publish --workspace=@r2u/model-viewer --access public

@@ -2,6 +2,11 @@
   "name": "model-viewer-packages",
   "private": true,
   "description": "The repository for all <model-viewer> packages",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "scripts": {
     "test": "./node_modules/.bin/lerna run test --stream",
     "test:ci": "./node_modules/.bin/lerna run test:ci --stream",
