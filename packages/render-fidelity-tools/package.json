@@ -1,5 +1,5 @@
 {
-  "name": "@google/model-viewer-render-fidelity-tools",
+  "name": "@r2u/model-viewer-render-fidelity-tools",
   "type": "module",
   "private": true,
   "version": "0.0.1",

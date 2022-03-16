@@ -154,7 +154,7 @@ const minCameraOrbitIntrinsics = (element: ModelViewerElementBase) => {
   return {
     basis: [
       numberNode(-Infinity, 'rad'),
-      numberNode(Math.PI / 8, 'rad'),
+      numberNode(0.01, 'rad'),
       numberNode(radius, 'm')
     ],
     keywords: {auto: [null, null, null]}
@@ -169,7 +169,7 @@ const maxCameraOrbitIntrinsics = (element: ModelViewerElementBase) => {
   return {
     basis: [
       numberNode(Infinity, 'rad'),
-      numberNode(Math.PI - Math.PI / 8, 'rad'),
+      numberNode(Math.PI - 0.01, 'rad'),
       numberNode(defaultRadius, 'm')
     ],
     keywords: {auto: [null, null, null]}
