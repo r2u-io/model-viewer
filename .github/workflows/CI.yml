@@ -36,4 +36,4 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: cd packages/model-viewer
-      - run: npm run publish --access public
+      - run: npm publish --access public
