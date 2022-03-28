@@ -156,7 +156,7 @@ export class SmoothControls extends EventDispatcher {
     this.setFieldOfView(100);
     this.jumpToGoal();
     document.addEventListener('r2u_reset_fov', () => {
-      this.goalLogFov = Math.log(DEFAULT_OPTIONS.maximumFieldOfView!)
+     this.setFieldOfView(100)
     })
   }
 
