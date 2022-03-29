@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {Euler, Event as ThreeEvent, EventDispatcher, PerspectiveCamera, Spherical} from 'three';
+import {Euler, Event as ThreeEvent, EventDispatcher, PerspectiveCamera, Spherical, Vector3} from 'three';
 
 import {TouchAction} from '../features/controls.js';
 import {clamp} from '../utilities.js';
@@ -118,6 +118,13 @@ export interface PointerChangeEvent extends ThreeEvent {
  * has been set in terms of position, rotation and scale, so it is important to
  * ensure that the camera's matrixWorld is in sync before using SmoothControls.
  */
+interface CamEvent extends Event {
+  detail: {
+    x: number
+    y: number
+    z: number
+  }
+}
 export class SmoothControls extends EventDispatcher {
   public sensitivity = 1;
 
@@ -136,6 +143,13 @@ export class SmoothControls extends EventDispatcher {
   private logFov = Math.log(DEFAULT_OPTIONS.maximumFieldOfView!);
   private goalLogFov = this.logFov;
   private fovDamper = new Damper();
+
+  private vector = new Vector3()
+  private goalVector = new Vector3()
+  private xDamper = new Damper()
+  private yDamper = new Damper()
+  private zDamper = new Damper()
+
 
   // Pointer state
   private touchMode: TouchMode = null;
@@ -157,6 +171,12 @@ export class SmoothControls extends EventDispatcher {
     this.jumpToGoal();
     document.addEventListener('r2u_reset_fov', () => {
      this.setFieldOfView(100)
+    })
+
+    document.addEventListener('cam', (e: Event) => {
+      const { x, y, z } = (e as CamEvent).detail
+
+      this.goalVector.set(x, y, z)
     })
   }
 
@@ -433,6 +453,10 @@ export class SmoothControls extends EventDispatcher {
 
     this.logFov = this.fovDamper.update(this.logFov, this.goalLogFov, delta, 1);
 
+    this.vector.x = this.xDamper.update(this.vector.x, this.goalVector.x, delta, 1)
+    this.vector.y = this.yDamper.update(this.vector.y, this.goalVector.y, delta, 1)
+    this.vector.z = this.zDamper.update(this.vector.z, this.goalVector.z, delta, 1)
+
     this.moveCamera();
   }
 
@@ -455,13 +479,17 @@ export class SmoothControls extends EventDispatcher {
     return this.goalSpherical.theta === this.spherical.theta &&
         this.goalSpherical.phi === this.spherical.phi &&
         this.goalSpherical.radius === this.spherical.radius &&
-        this.goalLogFov === this.logFov;
+        this.goalLogFov === this.logFov &&
+        this.goalVector.x === this.vector.x &&
+        this.goalVector.y === this.vector.z &&
+        this.goalVector.z === this.vector.z;
   }
 
   private moveCamera() {
     // Derive the new camera position from the updated spherical:
     this.spherical.makeSafe();
     this.camera.position.setFromSpherical(this.spherical);
+    this.camera.position.add(this.vector)
     this.camera.setRotationFromEuler(new Euler(
         this.spherical.phi - Math.PI / 2, this.spherical.theta, 0, 'YXZ'));
 
@@ -472,6 +500,9 @@ export class SmoothControls extends EventDispatcher {
 
     const source =
         this.isUserChange ? ChangeSource.USER_INTERACTION : ChangeSource.NONE;
+    
+
+    console.log(this.camera.position)
 
     this.dispatchEvent({type: 'change', source});
   }
