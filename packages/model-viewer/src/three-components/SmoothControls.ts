@@ -500,9 +500,6 @@ export class SmoothControls extends EventDispatcher {
 
     const source =
         this.isUserChange ? ChangeSource.USER_INTERACTION : ChangeSource.NONE;
-    
-
-    console.log(this.camera.position)
 
     this.dispatchEvent({type: 'change', source});
   }
