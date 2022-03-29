@@ -481,7 +481,7 @@ export class SmoothControls extends EventDispatcher {
         this.goalSpherical.radius === this.spherical.radius &&
         this.goalLogFov === this.logFov &&
         this.goalCameraVector.x === this.cameraVector.x &&
-        this.goalCameraVector.y === this.cameraVector.z &&
+        this.goalCameraVector.y === this.cameraVector.y &&
         this.goalCameraVector.z === this.cameraVector.z;
   }
 
