@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {AnimationAction, AnimationClip, AnimationMixer, Box3, Camera, Event as ThreeEvent, LoopPingPong, LoopRepeat, Matrix3, Object3D, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3} from 'three';
+import {AnimationAction, AnimationClip, AnimationMixer, Box3, Camera, Euler, Event as ThreeEvent, LoopPingPong, LoopRepeat, Matrix3, Object3D, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3} from 'three';
 import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 import ModelViewerElementBase, {$renderer, RendererInterface} from '../model-viewer-base.js';
@@ -55,6 +55,14 @@ const normalWorld = new Vector3();
 const raycaster = new Raycaster();
 const vector3 = new Vector3();
 const ndc = new Vector2();
+
+interface RotateSceneEvent extends Event {
+  detail: {
+    rx: number
+    ry: number
+    rz: number
+  }
+}
 
 /**
  * A THREE.Scene object that takes a Model and CanvasHTMLElement and
@@ -110,6 +118,13 @@ export class ModelScene extends Scene {
   private animationsByName: Map<string, AnimationClip> = new Map();
   private currentAnimationAction: AnimationAction|null = null;
 
+  private sceneRotation = new Euler()
+  private goalSceneRotation = new Euler()
+
+  private rxDamper = new Damper()
+  private ryDamper = new Damper()
+  private rzDamper = new Damper()
+
   constructor({canvas, element, width, height}: ModelSceneConfig) {
     super();
 
@@ -142,6 +157,15 @@ export class ModelScene extends Scene {
     this.element.shadowRoot!.querySelector('.default')!.appendChild(domElement);
 
     this.schemaElement.setAttribute('type', 'application/ld+json');
+
+    this.sceneRotation.set(0, 0, 0, 'YXZ')
+    this.goalSceneRotation.set(0, 0, 0, 'YXZ')
+
+    document.addEventListener('r2u_rotate_scene', (e) => {
+      const { rx, ry, rz } = (e as RotateSceneEvent).detail
+
+      this.goalSceneRotation.set(rx, ry, rz)
+    })
   }
 
   /**
@@ -443,7 +467,7 @@ export class ModelScene extends Scene {
   updateTarget(delta: number) {
     const goal = this.goalTarget;
     const target = this.target.position;
-    if (!goal.equals(target)) {
+    if (!goal.equals(target) || !this.goalSceneRotation.equals(this.sceneRotation)) {
       const normalization = this.boundingRadius / 10;
       let {x, y, z} = target;
       x = this.targetDamperX.update(x, goal.x, delta, normalization);
@@ -451,6 +475,12 @@ export class ModelScene extends Scene {
       z = this.targetDamperZ.update(z, goal.z, delta, normalization);
       this.target.position.set(x, y, z);
       this.target.updateMatrixWorld();
+
+      this.sceneRotation.x = this.rxDamper.update(this.sceneRotation.x, this.goalSceneRotation.x, delta, 1)
+      this.sceneRotation.y = this.ryDamper.update(this.sceneRotation.y, this.goalSceneRotation.y, delta, 1)
+      this.sceneRotation.z = this.rzDamper.update(this.sceneRotation.z, this.goalSceneRotation.z, delta, 1)
+      this.setRotationFromEuler(this.sceneRotation)
+
       this.setShadowRotation(this.yaw);
       this.queueRender();
     }
