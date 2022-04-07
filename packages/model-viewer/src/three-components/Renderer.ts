@@ -173,6 +173,12 @@ export class Renderer extends EventDispatcher {
     this.updateRendererSize();
     this.lastTick = performance.now();
     this.avgFrameDuration = 0;
+
+    document.addEventListener('r2u_render_snapshot', () => {
+      const snapshot = this.threeRenderer.domElement.toDataURL('image/png')
+      const snapshotEvent = new CustomEvent('r2u_send_snapshot', { detail: snapshot })
+      document.dispatchEvent(snapshotEvent)
+    })
   }
 
   /**
