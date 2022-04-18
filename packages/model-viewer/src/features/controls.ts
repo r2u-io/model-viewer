@@ -368,6 +368,12 @@ export const ControlsMixin = <T extends Constructor<ModelViewerElementBase>>(
     protected[$initialized] = false;
     protected[$maintainThetaPhi] = false;
 
+    constructor(...args: any) {
+      super(...args)
+
+      document.addEventListener('r2u_jump_to_goal', () => this.jumpCameraToGoal())
+    }
+
     getCameraOrbit(): SphericalPosition {
       const {theta, phi, radius} = this[$lastSpherical];
       return {
