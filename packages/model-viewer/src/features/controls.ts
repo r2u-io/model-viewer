@@ -164,7 +164,7 @@ const minCameraOrbitIntrinsics = (element: ModelViewerElementBase) => {
 const maxCameraOrbitIntrinsics = (element: ModelViewerElementBase) => {
   const orbitIntrinsics = cameraOrbitIntrinsics(element);
   const evaluator = new StyleEvaluator([], orbitIntrinsics);
-  const defaultRadius = evaluator.evaluate()[2];
+  const defaultRadius = evaluator.evaluate()[2] * 1.5;
 
   return {
     basis: [
