@@ -168,7 +168,6 @@ export class SmoothControls extends EventDispatcher {
   // controls mode
   private controlsMode: 'orbit' | 'pan' = 'orbit'
 
-
   constructor(
       readonly camera: PerspectiveCamera, readonly element: HTMLElement) {
     super();
@@ -190,6 +189,10 @@ export class SmoothControls extends EventDispatcher {
 
     document.addEventListener('r2u_set_controls_mode', (e: Event) => {
       this.controlsMode = (e as SetControlsMode).detail
+    })
+
+    document.addEventListener('r2u_change_fov', (e: any) => {
+      this.setFieldOfView(e.detail)
     })
   }
 
