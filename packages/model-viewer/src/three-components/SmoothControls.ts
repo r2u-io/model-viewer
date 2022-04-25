@@ -125,6 +125,11 @@ interface ChangeCameraOriginEvent extends Event {
     z: number
   }
 }
+
+interface SetControlsMode extends Event {
+  detail: 'orbit' | 'pan'
+}
+
 export class SmoothControls extends EventDispatcher {
   public sensitivity = 1;
 
@@ -160,6 +165,9 @@ export class SmoothControls extends EventDispatcher {
   private lastTouches!: TouchList;
   private touchDecided = false;
 
+  // controls mode
+  private controlsMode: 'orbit' | 'pan' = 'orbit'
+
   constructor(
       readonly camera: PerspectiveCamera, readonly element: HTMLElement) {
     super();
@@ -177,6 +185,14 @@ export class SmoothControls extends EventDispatcher {
       const { x, y, z } = (e as ChangeCameraOriginEvent).detail
 
       this.goalCameraVector.set(x, y, z)
+    })
+
+    document.addEventListener('r2u_set_controls_mode', (e: Event) => {
+      this.controlsMode = (e as SetControlsMode).detail
+    })
+
+    document.addEventListener('r2u_change_fov', (e: any) => {
+      this.setFieldOfView(e.detail)
     })
   }
 
@@ -526,6 +542,12 @@ export class SmoothControls extends EventDispatcher {
     this.dispatchEvent({type: 'change', source: ChangeSource.USER_INTERACTION});
   }
 
+  private userAdjustPan(deltaX: number, deltaY: number) {
+    this.goalCameraVector.x += 0.5 * (-deltaX * Math.cos(this.goalSpherical.theta) - deltaY * Math.cos(this.goalSpherical.phi) * Math.sin(this.goalSpherical.theta))
+    this.goalCameraVector.y += 0.5 * (deltaY * Math.sin(this.goalSpherical.phi))
+    this.goalCameraVector.z += 0.5 * (deltaX * Math.sin(this.goalSpherical.theta) - deltaY * Math.cos(this.goalSpherical.phi) * Math.cos(this.goalSpherical.theta))
+  }
+
   // Wraps to bewteen -pi and pi
   private wrapAngle(radians: number): number {
     const normalized = (radians + Math.PI) / (2 * Math.PI);
@@ -614,7 +636,8 @@ export class SmoothControls extends EventDispatcher {
       this.dispatchEvent({type: 'pointer-change-start', pointer: {...pointer}});
     }
 
-    this.userAdjustOrbit(deltaTheta, deltaPhi, 0);
+    if (this.controlsMode === 'orbit') this.userAdjustOrbit(deltaTheta, deltaPhi, 0);
+    else this.userAdjustPan(deltaTheta, deltaPhi)
   }
 
   private onPointerDown(fn: () => void) {
