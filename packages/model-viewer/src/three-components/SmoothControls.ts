@@ -543,9 +543,9 @@ export class SmoothControls extends EventDispatcher {
   }
 
   private userAdjustPan(deltaX: number, deltaY: number) {
-    this.goalCameraVector.x += 0.5 * (-deltaX * Math.cos(this.goalSpherical.theta) - deltaY * Math.cos(this.goalSpherical.phi) * Math.sin(this.goalSpherical.theta))
-    this.goalCameraVector.y += 0.5 * (deltaY * Math.sin(this.goalSpherical.phi))
-    this.goalCameraVector.z += 0.5 * (deltaX * Math.sin(this.goalSpherical.theta) - deltaY * Math.cos(this.goalSpherical.phi) * Math.cos(this.goalSpherical.theta))
+    this.goalCameraVector.x += 0.1 * (-deltaX * Math.cos(this.goalSpherical.theta) - deltaY * Math.cos(this.goalSpherical.phi) * Math.sin(this.goalSpherical.theta))
+    this.goalCameraVector.y += 0.1 * (deltaY * Math.sin(this.goalSpherical.phi))
+    this.goalCameraVector.z += 0.1 * (deltaX * Math.sin(this.goalSpherical.theta) - deltaY * Math.cos(this.goalSpherical.phi) * Math.cos(this.goalSpherical.theta))
   }
 
   // Wraps to bewteen -pi and pi
