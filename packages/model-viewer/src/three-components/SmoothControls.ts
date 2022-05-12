@@ -194,6 +194,28 @@ export class SmoothControls extends EventDispatcher {
     document.addEventListener('r2u_change_fov', (e: any) => {
       this.setFieldOfView(e.detail)
     })
+
+    document.addEventListener('r2u_get_camera_state_for_snapshot', () => {
+      const camera = {
+        targetPosition: {
+          x: this.goalCameraVector.x,
+          y: this.goalCameraVector.y,
+          z: this.goalCameraVector.z,
+        },
+        orbit: {
+          theta: this.goalSpherical.theta * 180 / Math.PI,
+          phi: this.goalSpherical.phi * 180 / Math.PI,
+          radius: this.goalSpherical.radius
+        }
+      }
+
+      document.dispatchEvent(new CustomEvent('r2u_inform_camera_state_for_snapshot', { 
+        detail: { 
+          camera, 
+          fov: Math.exp(this.goalLogFov),
+        } 
+      }))
+    })
   }
 
   get interactionEnabled(): boolean {
